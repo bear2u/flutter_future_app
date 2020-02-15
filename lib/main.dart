@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_future_app/view_model.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +13,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: ChangeNotifierProvider<ViewModel>(
+        create: (_) => ViewModel(),
+        child: MyHomePage(title: 'Flutter Demo Home Page'),
+      ),
     );
   }
 }
@@ -27,7 +31,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ViewModel _viewModel = ViewModel();
+  ViewModel _viewModel;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _viewModel = Provider.of<ViewModel>(context, listen: false);
+  }
 
   void _incrementCounter() async {
     _viewModel.increment();
@@ -35,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -46,38 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            StreamBuilder<int>(
-              stream: _viewModel.countStream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                print(snapshot.data);
-                int count = snapshot.data ?? -1;
+            Consumer(
+              builder: (context, ViewModel model, child) {
+                print('Consumer rebuild');
                 return Text(
-                  '1 => $count',
+                  '${model.pCount}',
                   style: Theme.of(context).textTheme.display1,
                 );
               },
-            ),
-            StreamBuilder<int>(
-              stream: _viewModel.countStream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                print(snapshot.data);
-                int count = snapshot.data ?? -1;
-                return Text(
-                  '2 => $count',
-                  style: Theme.of(context).textTheme.display1,
-                );
-              },
-            ),
+            )
           ],
         ),
       ),
