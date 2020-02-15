@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
+
 class ViewModel {
-  StreamController<int> _countController = StreamController<int>();
+  BehaviorSubject<int> _countController = BehaviorSubject();
 
   Stream<int> get countStream => _countController.stream;
 
@@ -20,7 +22,10 @@ class ViewModel {
 
   increment() async {
     _count = await _service.increment(_count);
-    _countController.sink.add(await delay(_count));
+    print(_count);
+    int lastValue = _countController.value;
+    print(lastValue);
+    _countController.sink.add(await delay(lastValue + _count));
   }
 
   decrement() async {

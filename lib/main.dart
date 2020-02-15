@@ -57,7 +57,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 print(snapshot.data);
                 int count = snapshot.data ?? -1;
                 return Text(
-                  '$count',
+                  '1 => $count',
+                  style: Theme.of(context).textTheme.display1,
+                );
+              },
+            ),
+            StreamBuilder<int>(
+              stream: _viewModel.countStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                print(snapshot.data);
+                int count = snapshot.data ?? -1;
+                return Text(
+                  '2 => $count',
                   style: Theme.of(context).textTheme.display1,
                 );
               },
